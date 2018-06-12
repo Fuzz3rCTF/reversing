@@ -226,6 +226,7 @@ So we must have an input that their hex looks like this:
 > There many possible string that can be inputted.
 > Mine was `?05+=1`
 
+
 # PHASE6:
 #### An easy one but tricky
 After opening it on a disassembler you see a weird variable called node1
@@ -308,7 +309,7 @@ The number `1000`
 But when debugging you could see that your input is stored on `EBX` and then `EAX = EBX - 1`
 So your input must be `1001` so after the instruction it will be equal to `1000`
 
-##### flag => 1001
+##### flag => `1001`
 
 ### Thanks for reading, your lovely skid,
 ## Fuzz3r <3
