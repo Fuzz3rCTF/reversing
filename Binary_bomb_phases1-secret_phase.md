@@ -95,7 +95,7 @@ $2 = 0x2
 
 We again see the same instruction
 We do the same
-It is clear now the we are on a loop
+It is clear now the we are on a loop :O
 ```
 gdb-peda$ x/d $eax
 ```
@@ -119,7 +119,7 @@ gdb-peda$ set *0xffffcdec=0x18
 ```
 > Continue(we could clearly understand the pattern but let's finish it the way i did it back then because i was dumb af)
 
-Again we continue
+we continue
 `Eax` now becomes `0x78 = 120`
 Our fifth number must be `120`
 We again set our input to `120` so we won't hit explode_bomb function
@@ -128,7 +128,7 @@ gdb-peda$ x/d $esi+$ebx*4
 0xffffcdf0:	5
 gdb-peda$ set *0xffffcdf0=0x78
 ```
-Continue
+Continue.
 
 Now `eax` is `0x2d0 = 720`
 So our last number must be `720`
@@ -148,34 +148,34 @@ ex.
 
 > You have again set a breakpoint on phase_3 to see the instructions 
 > You AGAIN go through intruction-intruction 
-We see a cmp instruction
+We see a `cmp` instruction
 ```
 => 0x8048bbf <phase_3+39>:	cmp    eax,0x2
 ```
 BUT this doesnt mean your first input that is stored in eax(You can check it) must be 2
 Over some tests you can see that IF your first int is 2 the program calls the explode _bomb function
 So! Our first input must be an int < 2 
-Let's say 1
+Let's say `1`
 Ok we continue 
 
-> We then see an intruction that checks if our SECOND number(third input) is 214
+> We then see an intruction that checks if our SECOND number(third input) is `214`
 ```
 => 0x8048c02 <phase_3+106>:	cmp    DWORD PTR [ebp-0x4],0xd6
 ```
 So we now know that our flag looks like this 
-1 <CHAR> 214
-We still need the character 
-We continue 
-We see a cmp instruction that checks if our character (ebp-0x5) is equal to bl variable
+`1 <CHAR> 214`
+We still need the character. 
+We continue. 
+We see a cmp instruction that checks if our character (ebp-0x5) is equal to `bl` variable.
 ```
 => 0x8048c8f <phase_3+247>:	cmp    bl,BYTE PTR [ebp-0x5]
 ```
-> We just print out the bl variable 
+> We just print out the `bl` variable. 
 ```
 gdb-peda$ p/x $bl
 $31 = 0x62
 ```
-So our flag must be 1 b 214
+So our flag must be `1 b 214`
 
 # PHASE4:
 #### This part is by far the worst reversing challenge i have seen (i havent seen many:P)
@@ -184,43 +184,47 @@ We start again by setting a breakpoint on phase_4
 We have first seen from the disassemble of IDA that it need only one number as input
 I wish i had bruteforced this...
 
-You give an input let's say 7
+You give an input let's say `7`
 
 You hit the breakpoint
 We see some junk checks(if our inut is 0 the bomb explodes)
 We see a interesting function `func4`
 
-If you go through it a looooooot of times you will notice that it removes 1 byte from your input and then 2 and then it add those numbers together
-After "some" googling i found that this is the relation of Fibonacci numbers 
-You must also have seen that there is a cmp function after func4 function
+If you go through it a looooooot of times you will notice that it removes 1 byte from your input and then 2 and then it add those numbers together.
+After "some" googling i found that this is the relation of Fibonacci numbers. 
+You must also have seen that there is a `cmp` instruction after func4 function.
 that checks if it's 55. So you understand that what ever we gave as input it must become 55 
-after it's loop over func4
-There is a fibonacci table number list that giver you the source number for every fibonacci number 
+after func4's loop
+There is a fibonacci table number list that giver you the source number for every fibonacci number. 
 ```
 f(55) = 9
 ```
-So `9` is the answer here
+So `9` is the answer here.
 
 # PHASE5:
 
 #### Here we have to do with a cipher function that we have to find an input that when it's ciphered gives us the word `giants`
 
-There is also a list that acccording to it the cipher occurs 
-okay, our input must be 6 chars long so we give a good pattern
-abcdef
-After the cipher loop you see the output and the list that was used
+There is also a list that acccording to it the cipher occurs. 
+Okay, our input must be 6 chars long so we give a good pattern.
+`abcdef`
+After the cipher loop you see the output and the list that was used.
+
 list: ```isrveawhobpnutfg```
 output of ````abcdef: srveaw````
 
 It took me a long time to figure out what was goinf on but you can understand that because our first input was 0x61 (a)
-It moved 1 character
-NOTE: computers start counting from 0 dummy
-So we must have an input that their hex must satisfy this pattern 
+it moved 1 character.
+
+#### NOTE: computers start counting from 0 dummy!
+
+So we must have an input that their hex looks like this:
+
 ```0xXf, 0xX0, 0xX5, 0xX5, 0xXb, 0xXd```
 
-> Make you calculations and i got a weird string 
-> There many possible string that can be inputted
-> Mine was ?05+=1
+> Make you calculations and i got a weird string.
+> There many possible string that can be inputted.
+> Mine was `?05+=1`
 
 # PHASE6:
 #### An easy one but tricky
@@ -230,16 +234,16 @@ After opening it on a disassembler you see a weird variable called node1
 And you see it is a number!
 You hold that.
 After hours of brainfuck i thought
-there must be other nodes too
-I was lucky making the decission of checking for other nodes
-After we get way the loop we will be able to print the value of node1
+there must be other nodes too!
+> I was lucky making the decission of checking for other nodes
+After the loop function stops we will be able to print the value of node1
 ```
 gdb-peda$ x/3x $esi
 0x804b26c <node1>:	0x000000fd	0x00000001	0x0804b260
 ```
 > BUT you can't just go through byte-byte to hit the the node2 node3 etc
-> You must do a trick i found out
-> The trick goes as follows 
+> You must do a trick i found out.
+> The trick goes as follows: 
 ```
 gdb-peda$ x/3x *($esi+8)
 0x804b260 <node2>:	0x000002d5	0x00000002	0x0804b254
@@ -262,7 +266,7 @@ gdb-peda$ x/3x *(*(*(*($esi+8)+8)+8)+8)
 gdb-peda$ x/3x *(*(*(*(*($esi+8)+8)+8)+8)+8)
 0x804b230 <node6>:	0x000001b0	0x00000006	0x00000000
 ```
-The values on the nodes go as follows:
+The values on the `nodes` go as follows:
 ```
 node1 = 253
 node2 = 725
@@ -271,7 +275,7 @@ node4 = 997
 node5 = 212
 node6 = 432
 ```
-If you are smart you could notice that the nodes reprecent the numbers of your input and you must input them from the bigger to the smaller
+If you are smart you could notice that the nodes represent the numbers of your input and you must input them from the bigger to the smaller.
 
 ##### So:
 ```
@@ -304,7 +308,7 @@ The number `1000`
 But when debugging you could see that your input is stored on `EBX` and then `EAX = EBX - 1`
 So your input must be `1001` so after the instruction it will be equal to `1000`
 
-
+##### flag => 1001
 
 ### Thanks for reading, your lovely skid,
-## Fuzz3r
+## Fuzz3r <3
