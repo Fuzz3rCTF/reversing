@@ -1,3 +1,5 @@
+#  CMU Binary Bomb
+
 # PHASE1:
 ##### On the the phase_1 function you see it pushes a value on an address
 ```
